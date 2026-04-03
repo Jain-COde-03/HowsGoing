@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Asimovian&family=BBH+Bartle&family=Changa+One:ital@0;1&family=Inter:opsz,wght@14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:wght@100..900&family=Tagesschrift&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+.App{
+    min-height: 100vh;
+    display : flex ;
+    /* background-image: url(./../public/24058265_aug_8_01.jpg);
+    background-size: cover;
+    background-position: center; */
+    background: #020024;
+    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 61%, rgba(0, 212, 255, 1) 100%);
+    color:rgb(255, 255, 255) ;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
