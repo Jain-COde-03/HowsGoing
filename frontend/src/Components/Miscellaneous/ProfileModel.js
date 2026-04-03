@@ -1,7 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
 import { useDisclosure } from "@chakra-ui/hooks";
-import { Icon, IconButton , Button, Image, Text} from "@chakra-ui/react";
+import {
+  Icon,
+  IconButton,
+  Button,
+  Image,
+  Text,
+  Avatar,
+} from "@chakra-ui/react";
 import {
   Modal,
   ModalOverlay,
@@ -31,23 +38,27 @@ const ProfileModel = ({ user, children }) => {
       <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader fontSize="3xl" fontWeight="bold" fontFamily="Work sans" textAlign="center">
+          <ModalHeader
+            fontSize="3xl"
+            fontWeight="bold"
+            fontFamily="Work sans"
+            textAlign="center"
+          >
             {user.name}
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody 
+          <ModalBody
             display="flex"
             flexDirection="column"
             alignItems="center"
             justifyContent="space-between"
             gap="20px"
           >
-            <Image
+            <Avatar
+              size="2xl"
+              cursor="pointer"
+              name={user.name}
               src={user.pic}
-              alt={user.name}
-              borderRadius="full"
-              boxSize="150px"
-              margin="0 auto"
             />
 
             <Text fontSize={{ base: "lg", md: "xl" }} fontFamily="Work sans">
