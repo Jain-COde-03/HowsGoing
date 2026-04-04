@@ -26,9 +26,16 @@ var socket = io(ENDPOINT, {
   transports: ["websocket"], // THIS IS KEY for Render
   upgrade: false,
 });
+var selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  const { user, selectedChat, setSelectedChat, notifications, setNotifications } = ChatState();
+  const {
+    user,
+    selectedChat,
+    setSelectedChat,
+    notifications,
+    setNotifications,
+  } = ChatState();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
