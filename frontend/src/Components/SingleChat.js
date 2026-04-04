@@ -21,8 +21,11 @@ import GroupProfileModel from "./Miscellaneous/GroupProfileModel";
 import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
-const ENDPOINT = process.env.REACT_APP_ENDPOINT || "http://localhost:5000";
-var socket, selectedChatCompare;
+const ENDPOINT = "https://howsgoing.onrender.com/";
+var socket = io(ENDPOINT, {
+  transports: ["websocket"], // THIS IS KEY for Render
+  upgrade: false,
+});
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { user, selectedChat, setSelectedChat, notifications, setNotifications } = ChatState();
