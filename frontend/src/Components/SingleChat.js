@@ -136,17 +136,23 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
         setNewMessage("");
 
-        const { data } = await axios.post(
-          "/api/message",
-          {
-            content: newMessage,
-            chatId: selectedChat._id,
-          },
-          config,
-        );
-        console.log("Message sent:", data);
-        socket.emit("new message", data);
-        setMessages([...messages, data]);
+        const endpoint = selectedChat.isAIChat
+          ? "/api/ai/message"
+          : "/api/message";
+        const body = selectedChat.isAIChat
+          ? { content: newMessage, chatId: selectedChat._id }
+          : { content: newMessage, chatId: selectedChat._id };
+
+        const { data } = await axios.post(endpoint, body, config);
+
+        if (selectedChat.isAIChat) {
+          socket.emit("new message", data.userMessage);
+          socket.emit("new message", data.aiMessage);
+          setMessages([...messages, data.userMessage, data.aiMessage]);
+        } else {
+          socket.emit("new message", data);
+          setMessages([...messages, data]);
+        }
       } catch (error) {
         toast({
           title: "Error Occured!",
@@ -203,7 +209,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               variant="ghost"
               aria-label="Back"
             />
-            {!selectedChat.isGroupChat ? (
+            {!selectedChat.isGroupChat && !selectedChat.isAIChat ? (
               <Box
                 display="flex"
                 alignItems="center"
@@ -238,6 +244,31 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                       : selectedChat.users[0]
                   }
                 />
+              </Box>
+            ) : selectedChat.isAIChat ? (
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                w="100%"
+                gap={4}
+              >
+                <Box display="flex" alignItems="center" gap={3}>
+                  <Avatar
+                    size="sm"
+                    cursor="pointer"
+                    name="AI Assistant"
+                    src="https://icon-library.com/images/robot-avatar-icon/robot-avatar-icon-8.jpg"
+                  />
+                  <Box>
+                    <Text fontSize="lg" fontWeight="700">
+                      🤖 AI Assistant
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Powered by Gemini AI
+                    </Text>
+                  </Box>
+                </Box>
               </Box>
             ) : (
               <Box

@@ -54,6 +54,36 @@ const SideDrawer = () => {
     history.push("/");
   };
 
+  const handleAIChat = async () => {
+    try {
+      setloadingChat(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.get("/api/ai/chat", config);
+
+      if (!chats.find((c) => c._id === data._id)) {
+        setChats([data, ...chats]);
+      }
+      setSelectedChat(data);
+      setloadingChat(false);
+      onClose();
+    } catch (error) {
+      setloadingChat(false);
+      toast({
+        title: "Error starting AI chat",
+        description: error.response?.data?.message || error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+  };
+
   const handleSearch = async () => {
     if (!search) {
       toast({
@@ -228,6 +258,14 @@ const SideDrawer = () => {
                   My Profile
                 </MenuItem>
               </ProfileModel>
+              <MenuItem
+                color="black"
+                onClick={handleAIChat}
+                _hover={{ bg: "gray.100" }}
+                borderRadius="md"
+              >
+                Chat with AI
+              </MenuItem>
               <MenuDivider />
               <MenuItem
                 color="black"

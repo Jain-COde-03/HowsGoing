@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
 import { Avatar, Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
@@ -35,6 +33,32 @@ const MyChats = ({ fetchAgain }) => {
     }
   };
 
+  const handleAIChat = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.get("/api/ai/chat", config);
+
+      if (!chats.find((c) => c._id === data._id)) {
+        setChats([data, ...chats]);
+      }
+      setSelectedChat(data);
+    } catch (error) {
+      toast({
+        title: "Error starting AI chat",
+        description: error.response?.data?.message || error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+  };
+
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
@@ -62,17 +86,29 @@ const MyChats = ({ fetchAgain }) => {
         <Text fontSize="2xl" fontWeight="800" fontFamily="Work sans">
           My Chats
         </Text>
-        <GroupChatModal>
+        <Box display="flex" gap={2}>
           <Button
             size="sm"
-            colorScheme="blue"
-            leftIcon={<i className="fas fa-plus"></i>}
+            colorScheme="purple"
+            leftIcon={<i className="fas fa-robot"></i>}
             borderRadius="full"
             fontSize="sm"
+            onClick={handleAIChat}
           >
-            Group
+            AI Chat
           </Button>
-        </GroupChatModal>
+          <GroupChatModal>
+            <Button
+              size="sm"
+              colorScheme="blue"
+              leftIcon={<i className="fas fa-plus"></i>}
+              borderRadius="full"
+              fontSize="sm"
+            >
+              Group
+            </Button>
+          </GroupChatModal>
+        </Box>
       </Box>
       <Box
         display="flex"
@@ -121,21 +157,27 @@ const MyChats = ({ fetchAgain }) => {
               <Avatar
                 size="sm"
                 name={
-                  chat.isGroupChat
-                    ? chat.chatName
-                    : getSender(loggedUser, chat.users)
+                  chat.isAIChat
+                    ? "AI Assistant"
+                    : chat.isGroupChat
+                      ? chat.chatName
+                      : getSender(loggedUser, chat.users)
                 }
                 src={
-                  chat.isGroupChat
-                    ? null
-                    : chat.users.find((u) => u._id !== loggedUser._id)?.pic
+                  chat.isAIChat
+                    ? "https://icon-library.com/images/robot-avatar-icon/robot-avatar-icon-8.jpg"
+                    : chat.isGroupChat
+                      ? null
+                      : chat.users.find((u) => u._id !== loggedUser._id)?.pic
                 }
               />
               <Box flex="1" minW="0">
                 <Text fontWeight="700" noOfLines={1}>
-                  {!chat.isGroupChat
-                    ? getSender(loggedUser, chat.users)
-                    : chat.chatName}
+                  {chat.isAIChat
+                    ? "🤖 AI Assistant"
+                    : !chat.isGroupChat
+                      ? getSender(loggedUser, chat.users)
+                      : chat.chatName}
                 </Text>
                 <Text fontSize="xs" opacity={0.8} noOfLines={1}>
                   {chat.latestMessage
@@ -144,7 +186,9 @@ const MyChats = ({ fetchAgain }) => {
                           ? chat.latestMessage.content.substring(0, 51) + "..."
                           : chat.latestMessage.content
                       }`
-                    : "No messages yet"}
+                    : chat.isAIChat
+                      ? "AI-powered conversations"
+                      : "No messages yet"}
                 </Text>
               </Box>
             </Box>

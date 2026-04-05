@@ -11,6 +11,7 @@ const userRoutes = require("./routes/userRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 connectDB();
@@ -23,6 +24,7 @@ const PORT = process.env.PORT || 5000;
 app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/ai", aiRoutes);
 
 const __dirname1 = path.resolve();
 if (process.env.NODE_ENV === "production") {
