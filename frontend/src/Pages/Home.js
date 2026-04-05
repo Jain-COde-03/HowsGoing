@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   Container,
   Box,
@@ -8,81 +9,154 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  HStack,
+  Icon,
 } from "@chakra-ui/react";
-import React , {useEffect} from "react";
+import React, { useEffect } from "react";
+import { FaComments, FaUserFriends } from "react-icons/fa";
 import Login from "../Components/Authentication/Login";
 import SignUp from "../Components/Authentication/SignUp";
 import { useHistory } from "react-router-dom";
 
 const Home = () => {
+  const history = useHistory();
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userInfo"));
 
-  const history = useHistory() ;
-    useEffect(() => {
-      const user = JSON.parse(localStorage.getItem("userInfo")) ;
-  
-      if(user){
-          history.push("/chats") ;
-      }
-    }, [history])
+    if (user) {
+      history.push("/chats");
+    }
+  }, [history]);
 
   return (
-    <>
-      <Container maxW="xl" centerContent>
+    <Container
+      maxW="100%"
+      centerContent
+      minH="100vh"
+      py={8}
+      px={4}
+      overflow="hidden"
+    >
+      <HStack
+        spacing={8}
+        w="100%"
+        h="auto"
+        alignItems="center"
+        justifyContent="center"
+        wrap="wrap"
+      >
+        {/* Logo/Brand Section */}
         <Box
-          d="flex"
-          p={3}
-          bg={useColorModeValue("whiteAlpha.300", "blackAlpha.300")}
-          backdropFilter="blur(0px) saturate(100%)"
-          borderRadius="20px"
-          border="1px solid"
-          borderColor={useColorModeValue("whiteAlpha.300", "whiteAlpha.100")}
-          boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
+          display="flex"
           flexDirection="column"
           alignItems="center"
           justifyContent="center"
-          w="100%"
-          m="40px 0 15px 0"
-          textAlign="center"
-          textColor="White"
+          p={8}
+          bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+          borderRadius="3xl"
+          boxShadow="2xl"
+          flex="1"
+          minW="280px"
+          maxW="sm"
+          minH="580px"
+          position="relative"
+          overflow="hidden"
+          _before={{
+            content: '""',
+            position: "absolute",
+            top: "-50%",
+            left: "-50%",
+            width: "200%",
+            height: "200%",
+            bg: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)",
+          }}
         >
-          <Text fontSize="2xl" fontFamily="Work Sans" fontWeight="bold">
+          <Icon as={FaComments} w={16} h={16} color="white" mb={4} />
+          <Text
+            fontSize="4xl"
+            fontFamily="Work Sans"
+            fontWeight="900"
+            color="white"
+            textAlign="center"
+            letterSpacing="wider"
+            textShadow="2px 2px 4px rgba(0,0,0,0.3)"
+          >
             HowsGoing?
+          </Text>
+          <Text
+            fontSize="lg"
+            color="whiteAlpha.900"
+            textAlign="center"
+            mt={2}
+            fontWeight="500"
+          >
+            Connect, Chat, Share Moments
           </Text>
         </Box>
 
+        {/* Auth Forms */}
         <Box
-          bg={useColorModeValue("whiteAlpha.300", "blackAlpha.300")}
-          backdropFilter="blur(0px) saturate(100%)"
-          borderRadius="20px"
+          bg="white"
+          borderRadius="3xl"
+          boxShadow="2xl"
+          flex="1"
+          minW="320px"
+          maxW="md"
+          p={8}
           border="1px solid"
-          borderColor={useColorModeValue("whiteAlpha.300", "whiteAlpha.100")}
-          boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
-          width="100%"
-          p={4}
-          textColor="black"
+          borderColor="gray.100"
+          position="relative"
+          minH="580px"
+          h="100%"
+          maxH="85vh"
+          overflowY="auto"
         >
-          <Tabs isFitted variant="soft-rounded" colorScheme="green">
-            <TabList>
-              <Tab color="white" fontSize="xl">
+          <Tabs isFitted variant="soft-rounded" colorScheme="purple">
+            <TabList mb={8} bg="gray.50" p={1} borderRadius="2xl">
+              <Tab
+                _selected={{
+                  bg: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "white",
+                  boxShadow: "md",
+                }}
+                borderRadius="xl"
+                fontWeight="600"
+                fontSize="md"
+                py={3}
+                transition="all 0.3s"
+              >
+                <Icon as={FaUserFriends} mr={2} />
                 Login
               </Tab>
-              <Tab color="white" fontSize="xl">
+              <Tab
+                _selected={{
+                  bg: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "white",
+                  boxShadow: "md",
+                }}
+                borderRadius="xl"
+                fontWeight="600"
+                fontSize="md"
+                py={3}
+                transition="all 0.3s"
+              >
+                <Icon as={FaComments} mr={2} />
                 Sign Up
               </Tab>
             </TabList>
 
             <TabPanels>
-              <TabPanel>
-                {<Login/>}
+              <TabPanel p={0}>
+                <Login />
               </TabPanel>
-              <TabPanel>
-                {<SignUp />}
+              <TabPanel p={0}>
+                <SignUp />
               </TabPanel>
             </TabPanels>
           </Tabs>
         </Box>
-      </Container>
-    </>
+      </HStack>
+    </Container>
   );
 };
 

@@ -8,6 +8,8 @@ import {
   FormControl,
   IconButton,
   Input,
+  InputGroup,
+  InputRightElement,
   Spinner,
   Text,
   useToast,
@@ -184,29 +186,32 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       {selectedChat ? (
         <>
           <Box
-            fontSize={{ base: "28px", md: "30px" }}
-            pb={3}
-            px={2}
-            w="100%"
-            fontFamily="Work sans"
             display="flex"
-            justifyContent={{ base: "space-between" }}
             alignItems="center"
+            justifyContent="space-between"
+            p={4}
+            bg="white"
+            boxShadow="sm"
+            borderRadius="lg"
+            w="100%"
+            mb={3}
           >
             <IconButton
               display={{ base: "flex", md: "none" }}
               icon={<ArrowBackIcon />}
               onClick={() => setSelectedChat("")}
+              variant="ghost"
+              aria-label="Back"
             />
             {!selectedChat.isGroupChat ? (
-              <>
-                <Box
-                  fontFamily="Work sans"
-                  fontSize="2xl"
-                  display="flex"
-                  alignItems="center"
-                  gap={3}
-                >
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                w="100%"
+                gap={4}
+              >
+                <Box display="flex" alignItems="center" gap={3}>
                   <Avatar
                     size="sm"
                     cursor="pointer"
@@ -217,7 +222,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         : selectedChat.users[0].pic
                     }
                   />
-                  {getSender(user, selectedChat.users)}
+                  <Box>
+                    <Text fontSize="lg" fontWeight="700">
+                      {getSender(user, selectedChat.users)}
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Active now
+                    </Text>
+                  </Box>
                 </Box>
                 <ProfileModel
                   user={
@@ -226,45 +238,37 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                       : selectedChat.users[0]
                   }
                 />
-              </>
+              </Box>
             ) : (
               <Box
-                fontFamily="Work sans"
-                fontSize="2xl"
                 display="flex"
                 alignItems="center"
                 justifyContent="space-between"
                 w="100%"
+                gap={4}
               >
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="start"
-                  gap={3}
-                  w="50%"
-                >
+                <Box display="flex" alignItems="center" gap={3}>
                   <Avatar
                     size="sm"
                     cursor="pointer"
                     name={selectedChat.chatName}
                   />
-                  {selectedChat.chatName.toUpperCase()}
+                  <Box>
+                    <Text fontSize="lg" fontWeight="700">
+                      {selectedChat.chatName.toUpperCase()}
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Group chat
+                    </Text>
+                  </Box>
                 </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  gap={3}
-                  justifyContent="end"
-                  w="50%"
-                >
-                  {
-                    <UpdateGroupChatModal
-                      fetchAgain={fetchAgain}
-                      setFetchAgain={setFetchAgain}
-                      fetchMessages={fetchMessages}
-                    />
-                  }
-                  {<GroupProfileModel />}
+                <Box display="flex" alignItems="center" gap={3}>
+                  <UpdateGroupChatModal
+                    fetchAgain={fetchAgain}
+                    setFetchAgain={setFetchAgain}
+                    fetchMessages={fetchMessages}
+                  />
+                  <GroupProfileModel />
                 </Box>
               </Box>
             )}
@@ -272,55 +276,83 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           <Box
             display="flex"
             flexDirection="column"
-            justifyContent="flex-end"
-            p={3}
-            bg="#E8E8E8"
+            justifyContent="space-between"
+            p={4}
+            bg="gray.50"
             w="100%"
             h="100%"
-            borderRadius="lg"
-            overflowY="hidden"
+            borderRadius="xl"
+            overflow="hidden"
+            boxShadow="inner"
           >
             {loading ? (
-              <>
-                <Spinner
-                  size="xl"
-                  w={20}
-                  h={20}
-                  alignSelf="center"
-                  margin="auto"
-                />
-              </>
+              <Spinner
+                size="xl"
+                w={20}
+                h={20}
+                alignSelf="center"
+                margin="auto"
+              />
             ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  overflowY: "scroll",
-                  scrollbarWidth: "none",
-                  height: "100%",
+              <Box
+                flex="1"
+                overflowY="auto"
+                pb={3}
+                css={{
+                  "&::-webkit-scrollbar": {
+                    width: "6px",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    background: "#CBD5E0",
+                    borderRadius: "12px",
+                  },
                 }}
               >
                 <ScrollableChat messages={messages} />
-              </div>
+              </Box>
             )}
-            <FormControl onKeyDown={(e) => sendMessage(e)} isRequired mt={3}>
+            <FormControl isRequired mt={3}>
               {istyping ? (
-                <div>
+                <Box mb={3} display="flex" justifyContent="flex-start">
                   <Lottie
                     options={defaultOptions}
-                    width={70}
-                    height={70}
-                    style={{ marginBottom: 15, marginLeft: 0 }}
+                    width={50}
+                    height={50}
+                    style={{ marginBottom: 0 }}
                   />
-                </div>
+                </Box>
               ) : null}
-              <Input
-                variant="filled"
-                bg="#d3d0d0"
-                placeholder="Enter a message..."
-                value={newMessage}
-                onChange={(e) => typingHandler(e)}
-              />
+              <InputGroup size="md">
+                <Input
+                  variant="filled"
+                  bg="white"
+                  placeholder="Type a message..."
+                  value={newMessage}
+                  onChange={(e) => typingHandler(e)}
+                  onKeyDown={(e) => sendMessage(e)}
+                  borderRadius="2xl"
+                  boxShadow="sm"
+                  _focus={{ borderColor: "blue.300", boxShadow: "outline" }}
+                  pr="40px"
+                />
+                <InputRightElement width="40px">
+                  <IconButton
+                    h="1.75rem"
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const event = { key: "Enter" };
+                      sendMessage(event);
+                    }}
+                    colorScheme="blue"
+                    variant="ghost"
+                    aria-label="Send message"
+                    isDisabled={!newMessage.trim()}
+                  >
+                    <i className="fas fa-paper-plane" />
+                  </IconButton>
+                </InputRightElement>
+              </InputGroup>
             </FormControl>
           </Box>
         </>

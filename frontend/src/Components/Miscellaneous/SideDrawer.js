@@ -124,16 +124,23 @@ const SideDrawer = () => {
         flexDirection={"row"}
         justifyContent="space-between"
         alignItems="center"
-        bg="white"
+        bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
         w="100%"
-        p="5px 10px 5px 10px"
-        borderWidth="5px"
-        textcolor="black"
+        p="12px 20px"
+        boxShadow="lg"
+        textcolor="white"
       >
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-          <Button onClick={onOpen} variant="ghost">
+          <Button
+            onClick={onOpen}
+            variant="ghost"
+            color="white"
+            _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
+            fontSize="lg"
+            gap={3}
+          >
             <i className="fas fa-search"></i>
-            <Text d={{ base: "none", md: "flex" }} px={4}>
+            <Text d={{ base: "none", md: "flex" }} fontWeight="500">
               Search User
             </Text>
           </Button>
@@ -142,29 +149,40 @@ const SideDrawer = () => {
         <Text
           fontSize="2xl"
           fontFamily="Work sans"
-          color="black"
-          fontWeight="bold"
+          color="white"
+          fontWeight="800"
+          letterSpacing="1px"
         >
           HowsGoing?
         </Text>
 
-        <div>
+        <Box display="flex" alignItems="center" gap={2}>
           <Menu>
-            <MenuButton as={Button} textColor="black" p={1} position="relative" m={2}>
+            <MenuButton
+              as={Button}
+              color="white"
+              bg="transparent"
+              p={2}
+              position="relative"
+              m={1}
+              _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
+              borderRadius="full"
+            >
               {notifications.length > 0 && (
                 <Badge
                   position="absolute"
-                  top="-2"
-                  right="-2"
+                  top="-1"
+                  right="-1"
                   colorScheme="red"
                   borderRadius="full"
+                  fontSize="xs"
                 >
                   {notifications.length}
                 </Badge>
               )}
-              <BellIcon fontSize="2xl" m={1} />
+              <BellIcon fontSize="xl" />
             </MenuButton>
-            <MenuList textColor="black" p={2}>
+            <MenuList textColor="black" p={2} boxShadow="lg" borderRadius="lg">
               {!notifications.length && "No New Messages"}
               {notifications.map((notif) => (
                 <MenuItem
@@ -173,6 +191,8 @@ const SideDrawer = () => {
                     setSelectedChat(notif.chat);
                     setNotifications(notifications.filter((n) => n !== notif));
                   }}
+                  _hover={{ bg: "gray.100" }}
+                  borderRadius="md"
                 >
                   {notif.chat.isGroupChat
                     ? `New Message in ${notif.chat.chatName}`
@@ -182,40 +202,75 @@ const SideDrawer = () => {
             </MenuList>
           </Menu>
           <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+            <MenuButton
+              as={Button}
+              rightIcon={<ChevronDownIcon />}
+              bg="transparent"
+              color="white"
+              _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
+              borderRadius="full"
+            >
               <Avatar
                 size="sm"
                 cursor="pointer"
                 name={user.name}
                 src={user.pic}
+                border="2px solid white"
               />
             </MenuButton>
-            <MenuList textcolor="black">
+            <MenuList textcolor="black" boxShadow="lg" borderRadius="lg">
               <ProfileModel user={user}>
-                <MenuItem color="black">My Profile</MenuItem>
+                <MenuItem
+                  color="black"
+                  _hover={{ bg: "gray.100" }}
+                  borderRadius="md"
+                >
+                  My Profile
+                </MenuItem>
               </ProfileModel>
               <MenuDivider />
-              <MenuItem color="black" onClick={logOutHandler}>
+              <MenuItem
+                color="black"
+                onClick={logOutHandler}
+                _hover={{ bg: "red.50" }}
+                borderRadius="md"
+              >
                 Logout
               </MenuItem>
             </MenuList>
           </Menu>
-        </div>
+        </Box>
       </Box>
 
       <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
         <DrawerOverlay />
-        <DrawerContent>
-          <DrawerHeader>Search Users</DrawerHeader>
-          <DrawerBody>
-            <Box display="flex" pb={2}>
+        <DrawerContent borderRadius="xl">
+          <DrawerHeader
+            bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            color="white"
+            borderRadius="xl 0 0 0"
+            fontWeight="800"
+            fontSize="lg"
+          >
+            Search Users
+          </DrawerHeader>
+          <DrawerBody pt={6}>
+            <Box display="flex" pb={4} gap={2}>
               <Input
                 placeholder="Search by name or email"
                 value={search}
                 onChange={(e) => setsearch(e.target.value)}
+                borderRadius="2xl"
+                boxShadow="sm"
+                _focus={{ borderColor: "blue.300", boxShadow: "outline" }}
               />
-              <Button ml={2} onClick={handleSearch}>
-                Go
+              <Button
+                onClick={handleSearch}
+                colorScheme="blue"
+                borderRadius="2xl"
+                fontWeight="600"
+              >
+                Search
               </Button>
             </Box>
             {loading ? (
@@ -231,7 +286,9 @@ const SideDrawer = () => {
                 />
               ))
             )}
-            {loadingChat && <Spinner ml="auto" display="flex" />}
+            {loadingChat && (
+              <Spinner ml="auto" display="flex" thickness="4px" />
+            )}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

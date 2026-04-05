@@ -3,12 +3,12 @@
 .App{
     min-height: 100vh;
     display : flex ;
-    /* background-image: url(./../public/24058265_aug_8_01.jpg);
+    background-image: url(./../public/image.png);
     background-size: cover;
-    background-position: center; */
-    background: #020024;
+    background-position: center;
+    /* background: #020024;
     background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 61%, rgba(0, 212, 255, 1) 100%);
-    color:rgb(255, 255, 255) ;
+    color:rgb(255, 255, 255) ; */
 }
 
 ::-webkit-scrollbar {
