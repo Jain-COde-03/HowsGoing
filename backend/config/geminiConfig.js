@@ -1,12 +1,19 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+let cachedClient = null;
+
 const initializeGemini = () => {
   try {
+    if (cachedClient) return cachedClient;
+
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY is not set in environment variables");
     }
+
     const client = new GoogleGenerativeAI(apiKey);
+    cachedClient = client;
+
     return client;
   } catch (error) {
     console.error("Error initializing Gemini:", error.message);
@@ -15,7 +22,14 @@ const initializeGemini = () => {
 };
 
 const getGeminiModel = (client) => {
-  return client.getGenerativeModel({ model: "gemini-pro" });
+  return client.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: {
+      maxOutputTokens: 500,
+      temperature: 0.7,
+      topP: 0.9,
+    },
+  });
 };
 
 module.exports = {

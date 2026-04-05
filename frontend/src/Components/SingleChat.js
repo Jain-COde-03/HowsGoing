@@ -23,9 +23,12 @@ import GroupProfileModel from "./Miscellaneous/GroupProfileModel";
 import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
-const ENDPOINT = "https://howsgoing.onrender.com/";
+const ENDPOINT =
+  process.env.NODE_ENV === "production"
+    ? "https://howsgoing.onrender.com"
+    : "http://localhost:5000";
 var socket = io(ENDPOINT, {
-  transports: ["websocket"], // THIS IS KEY for Render
+  transports: ["websocket", "polling"],
   upgrade: false,
 });
 var selectedChatCompare;
@@ -90,7 +93,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    socket = io(ENDPOINT);
+    socket = io(ENDPOINT, {
+      transports: ["websocket", "polling"],
+      upgrade: false,
+    });
     socket.emit("setup", user);
     socket.on("connected", () => {
       setSocketConnected(true);
@@ -156,7 +162,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       } catch (error) {
         toast({
           title: "Error Occured!",
-          description: "Failed to send the message",
+          description:
+            error.response?.data?.message ||
+            error.message ||
+            "Failed to send the message",
           status: "error",
           duration: 5000,
           isClosable: true,
