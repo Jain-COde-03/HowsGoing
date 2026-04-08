@@ -1,17 +1,29 @@
-const getSender = (loggedUser, users) => {
-  return users[0]._id === loggedUser._id ? users[1].name : users[0].name;
-};
+const normalizeUsers = (users) => (Array.isArray(users) ? users : []);
 
 const getSenderFull = (loggedUser, users) => {
-  return users[0]._id === loggedUser._id ? users[1] : users[0];
+  const normalizedUsers = normalizeUsers(users);
+
+  if (!loggedUser?._id || normalizedUsers.length === 0) {
+    return normalizedUsers[0] || null;
+  }
+
+  return (
+    normalizedUsers.find((user) => user?._id !== loggedUser._id) ||
+    normalizedUsers[0] ||
+    null
+  );
+};
+
+const getSender = (loggedUser, users) => {
+  return getSenderFull(loggedUser, users)?.name || "Unknown User";
 };
 
 const getSenderGroup = (loggedUser, users) => {
-  return users.filter((u) => u._id !== loggedUser._id);
+  return normalizeUsers(users).filter((u) => u?._id !== loggedUser?._id);
 };
 
 const getSenderGroupFull = (loggedUser, users) => {
-  return users.filter((u) => u._id !== loggedUser._id);
+  return getSenderGroup(loggedUser, users);
 };
 
 const isSameSender = (messages, m, i, userId) => {

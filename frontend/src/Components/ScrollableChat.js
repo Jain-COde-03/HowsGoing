@@ -32,19 +32,21 @@ const ScrollableChat = ({ messages }) => {
     });
   };
 
+  const getSenderId = (message) => message?.sender?._id;
+  const getSenderName = (message) => message?.sender?.name || "Unknown User";
+  const getSenderPic = (message) => message?.sender?.pic;
+
   // Check if this is the first message from a sender (or message is from current user)
   const isFirstMessageFromSender = (messages, currentMsg, index, userId) => {
-    if (currentMsg.sender._id === userId) return false;
-    return (
-      index === 0 || messages[index - 1].sender._id !== currentMsg.sender._id
-    );
+    if (getSenderId(currentMsg) === userId) return false;
+    return index === 0 || getSenderId(messages[index - 1]) !== getSenderId(currentMsg);
   };
 
   return (
     <ScrollableFeed>
       {messages &&
         messages.map((m, i) => {
-          const isOwnMessage = m.sender._id === user._id;
+          const isOwnMessage = getSenderId(m) === user._id;
           const isFirstMsg = isFirstMessageFromSender(messages, m, i, user._id);
 
           return (
@@ -58,15 +60,15 @@ const ScrollableChat = ({ messages }) => {
             >
               {!isOwnMessage && isFirstMsg && (
                 <Tooltip
-                  label={m.sender.name}
+                  label={getSenderName(m)}
                   placement="bottom-start"
                   hasArrow
                 >
                   <Avatar
                     size="sm"
                     cursor="pointer"
-                    name={m.sender.name}
-                    src={m.sender.pic}
+                    name={getSenderName(m)}
+                    src={getSenderPic(m)}
                     mr={2}
                     mt={1}
                   />
@@ -103,7 +105,7 @@ const ScrollableChat = ({ messages }) => {
                       left="12px"
                       zIndex="1"
                     >
-                      {isOwnMessage ? "You" : m.sender.name}
+                      {isOwnMessage ? "You" : getSenderName(m)}
                     </Text>
                   )}
 

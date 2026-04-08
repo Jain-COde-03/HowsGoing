@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
-import { Avatar, Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
+import { Avatar, Box, Button, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
-import { getSender } from "../Config/ChatLogics";
+import { getSender, getSenderFull } from "../Config/ChatLogics";
 import GroupChatModal from "./Miscellaneous/GroupChatModal";
 
 const MyChats = ({ fetchAgain }) => {
@@ -131,7 +131,18 @@ const MyChats = ({ fetchAgain }) => {
         }}
       >
         {chats.length > 0 ? (
-          chats.map((chat) => (
+          chats.map((chat) => {
+            const otherUser = getSenderFull(loggedUser, chat.users);
+            const latestContent = chat.latestMessage?.content || "";
+            const latestSenderName =
+              chat.latestMessage?.sender?.name ||
+              (chat.latestMessage?.sender?._id === loggedUser?._id
+                ? "You"
+                : chat.isAIChat
+                  ? "AI Assistant"
+                  : otherUser?.name || "Unknown User");
+
+            return (
             <Box
               key={chat._id}
               p={3}
@@ -168,7 +179,7 @@ const MyChats = ({ fetchAgain }) => {
                     ? "https://icon-library.com/images/robot-avatar-icon/robot-avatar-icon-8.jpg"
                     : chat.isGroupChat
                       ? null
-                      : chat.users.find((u) => u._id !== loggedUser._id)?.pic
+                      : otherUser?.pic
                 }
               />
               <Box flex="1" minW="0">
@@ -181,10 +192,10 @@ const MyChats = ({ fetchAgain }) => {
                 </Text>
                 <Text fontSize="xs" opacity={0.8} noOfLines={1}>
                   {chat.latestMessage
-                    ? `${chat.latestMessage.sender.name}: ${
-                        chat.latestMessage.content.length > 50
-                          ? chat.latestMessage.content.substring(0, 51) + "..."
-                          : chat.latestMessage.content
+                    ? `${latestSenderName}: ${
+                        latestContent.length > 50
+                          ? latestContent.substring(0, 51) + "..."
+                          : latestContent
                       }`
                     : chat.isAIChat
                       ? "AI-powered conversations"
@@ -192,7 +203,8 @@ const MyChats = ({ fetchAgain }) => {
                 </Text>
               </Box>
             </Box>
-          ))
+            );
+          })
         ) : (
           <Box p={8} textAlign="center" color="gray.400">
             <Text fontSize="lg" fontWeight="500">

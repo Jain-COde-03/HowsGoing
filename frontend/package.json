@@ -23,6 +23,7 @@
     "react-scripts": "5.0.1",
     "react-scrollable-feed": "^2.0.4",
     "socket.io-client": "^4.8.3",
+    "talk-a-tive": "file:..",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

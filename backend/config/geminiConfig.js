@@ -23,11 +23,9 @@ const initializeGemini = () => {
 
 const getGeminiModel = (client) => {
   return client.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.1-flash-lite-preview",
     generationConfig: {
-      maxOutputTokens: 500,
-      temperature: 0.7,
-      topP: 0.9,
+      maxOutputTokens: 10000,
     },
   });
 };

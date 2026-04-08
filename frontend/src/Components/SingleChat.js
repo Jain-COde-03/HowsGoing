@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import Lottie from "react-lottie";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { getSender } from "../Config/ChatLogics";
+import { getSender, getSenderFull } from "../Config/ChatLogics";
 import ProfileModel from "./Miscellaneous/ProfileModel";
 import UpdateGroupChatModal from "./Miscellaneous/UpdateGroupChatModal";
 import GroupProfileModel from "./Miscellaneous/GroupProfileModel";
@@ -48,6 +48,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
+  const directChatUser = getSenderFull(user, selectedChat?.users);
 
   const defaultOptions = {
     loop: true,
@@ -231,11 +232,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     size="sm"
                     cursor="pointer"
                     name={getSender(user, selectedChat.users)}
-                    src={
-                      selectedChat.users[0]._id === user._id
-                        ? selectedChat.users[1].pic
-                        : selectedChat.users[0].pic
-                    }
+                    src={directChatUser?.pic}
                   />
                   <Box>
                     <Text fontSize="lg" fontWeight="700">
@@ -246,13 +243,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     </Text>
                   </Box>
                 </Box>
-                <ProfileModel
-                  user={
-                    selectedChat.users[0]._id === user._id
-                      ? selectedChat.users[1]
-                      : selectedChat.users[0]
-                  }
-                />
+                <ProfileModel user={directChatUser || {}} />
               </Box>
             ) : selectedChat.isAIChat ? (
               <Box

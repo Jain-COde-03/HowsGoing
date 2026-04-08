@@ -1,55 +1,80 @@
-const asyncHandler = require("express-async-handler")
-const Message = require('../models/messageModel');
+const asyncHandler = require("express-async-handler");
 const Chat = require("../models/chatModel");
-const User = require("../models/userModel");
+const { syncLegacyMessages } = require("../utils/chatMessageUtils");
 
-const sendMessage = asyncHandler(async(req,res) =>{
-    const {content , chatId} =req.body ;
+const buildChatPayload = (chat) => ({
+  _id: chat._id,
+  chatName: chat.chatName,
+  isGroupChat: chat.isGroupChat,
+  isAIChat: chat.isAIChat,
+  users: chat.users,
+});
 
-    if(!content || !chatId ){
-        console.log("Invalid data passed into request") ;
-        return res.sendStatus(400) ;
+const sendMessage = asyncHandler(async (req, res) => {
+  const { content, chatId } = req.body;
+
+  if (!content || !chatId) {
+    console.log("Invalid data passed into request");
+    return res.sendStatus(400);
+  }
+
+  try {
+    const chat = await Chat.findById(chatId).populate("users", "name pic email");
+
+    if (!chat) {
+      res.status(404);
+      throw new Error("Chat not found");
     }
 
-    var newMessage = {
-        sender: req.user._id ,
-        content : content ,
-        chat : chatId ,
-    } ;
+    await syncLegacyMessages(chat);
 
-    try{
-        var message = await Message.create(newMessage) ;
+    chat.messages.push({
+      sender: req.user._id,
+      content,
+      chat: chatId,
+    });
 
-        message = await message.populate("sender","name pic");
-        message = await message.populate("chat");
-        message = await User.populate(message , {
-            path : "chat.users" ,
-            select : "name pic email" ,
-        }) ;
+    chat.latestMessage = chat.messages[chat.messages.length - 1];
+    await chat.save();
 
-        await Chat.findByIdAndUpdate(req.body.chatId , {
-            latestMessage : message ,
-        })
+    await chat.populate("messages.sender", "name pic email");
+    await chat.populate("latestMessage.sender", "name pic email");
 
-        res.json(message) ;
+    const message = chat.messages[chat.messages.length - 1].toObject();
+    message.chat = buildChatPayload(chat);
 
+    res.json(message);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
 
-    }catch(error){
-        res.status(400) ;
-        throw new Error(error.message) ;
+const allMessages = asyncHandler(async (req, res) => {
+  try {
+    const chat = await Chat.findById(req.params.chatId)
+      .populate("users", "name pic email")
+      .populate("messages.sender", "name pic email");
+
+    if (!chat) {
+      res.status(404);
+      throw new Error("Chat not found");
     }
-}) ;
 
-const allMessages = asyncHandler( async (req,res) => {
-    try{
-        const messages = await Message.find({chat : req.params.chatId})
-        .populate("sender","name pic email")
-        .populate("chat") ;
-        res.json(messages) ;
-    }catch(error){
-        res.status(400) ;
-        throw new Error(error.message) ;
-    }
-}) ;
+    await syncLegacyMessages(chat);
+    await chat.populate("messages.sender", "name pic email");
 
-module.exports = {sendMessage,allMessages}
+    const messages = chat.messages.map((message) => {
+      const formattedMessage = message.toObject();
+      formattedMessage.chat = buildChatPayload(chat);
+      return formattedMessage;
+    });
+
+    res.json(messages);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+module.exports = { sendMessage, allMessages };

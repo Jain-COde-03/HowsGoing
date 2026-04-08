@@ -1,15 +1,22 @@
 const asyncHandler = require("express-async-handler");
 const { initializeGemini, getGeminiModel } = require("../config/geminiConfig");
-const Message = require("../models/messageModel");
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
+const { syncLegacyMessages } = require("../utils/chatMessageUtils");
 
 const AI_EMAIL = "ai-assistant@howsgoing.com";
 const AI_NAME = "HG AI";
 
 let cachedAIUser = null;
 
-// 🔹 Get or cache AI user
+const buildChatPayload = (chat) => ({
+  _id: chat._id,
+  chatName: chat.chatName,
+  isGroupChat: chat.isGroupChat,
+  isAIChat: chat.isAIChat,
+  users: chat.users,
+});
+
 const getAiUser = async () => {
   if (cachedAIUser) return cachedAIUser;
 
@@ -28,7 +35,6 @@ const getAiUser = async () => {
   return aiUser;
 };
 
-// 🔹 Get or Create AI Chat
 const getOrCreateAIChat = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
@@ -38,7 +44,9 @@ const getOrCreateAIChat = asyncHandler(async (req, res) => {
     let aiChat = await Chat.findOne({
       users: { $all: [userId, aiUser._id] },
       isAIChat: true,
-    }).populate("users", "-password");
+    })
+      .populate("users", "-password")
+      .populate("latestMessage.sender", "name pic email");
 
     if (!aiChat) {
       aiChat = await Chat.create({
@@ -57,7 +65,6 @@ const getOrCreateAIChat = asyncHandler(async (req, res) => {
   }
 });
 
-// 🔹 Send message to AI (with context)
 const sendAIMessage = asyncHandler(async (req, res) => {
   const { chatId, content } = req.body;
   const userId = req.user._id;
@@ -68,36 +75,33 @@ const sendAIMessage = asyncHandler(async (req, res) => {
 
   try {
     const aiUser = await getAiUser();
+    const chat = await Chat.findById(chatId).populate(
+      "users",
+      "name pic email",
+    );
 
-    // Save user message
-    let message = await Message.create({
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+
+    await syncLegacyMessages(chat);
+
+    chat.messages.push({
       sender: userId,
       content,
       chat: chatId,
     });
 
-    message = await message.populate("sender", "name pic email");
-
-    // 🔹 Fetch last 10 messages for context
-    const previousMessages = await Message.find({ chat: chatId })
-      .sort({ createdAt: 1 })
-      .limit(10)
-      .populate("sender", "name");
+    await chat.populate("messages.sender", "name pic email");
+    const previousMessages = chat.messages.slice(-10);
 
     const history = previousMessages
       .map((msg) => `${msg.sender.name}: ${msg.content}`)
       .join("\n");
 
-    // 🔹 Better prompt
     const prompt = `
 You are HG AI, a smart and friendly assistant in a chat application.
-
-Rules:
-- Keep responses concise
-- Be helpful and accurate
-- Use simple language
-- If unsure, say "I'm not sure"
-
+Give response in ver detailed way .
 Conversation:
 ${history}
 
@@ -111,21 +115,27 @@ AI:
     const result = await model.generateContent(prompt);
     const aiResponse = result?.response?.text() || "Sorry, I couldn't respond.";
 
-    // Save AI message
-    let aiMessage = await Message.create({
+    chat.messages.push({
       sender: aiUser._id,
       content: aiResponse,
       chat: chatId,
     });
 
-    aiMessage = await aiMessage.populate("sender", "name pic email");
+    chat.latestMessage = chat.messages[chat.messages.length - 1];
+    await chat.save();
 
-    await Chat.findByIdAndUpdate(chatId, {
-      latestMessage: aiMessage,
-    });
+    await chat.populate("messages.sender", "name pic email");
+    await chat.populate("latestMessage.sender", "name pic email");
+
+    const userMessage = chat.messages[chat.messages.length - 2].toObject();
+    const aiMessage = chat.messages[chat.messages.length - 1].toObject();
+    const chatPayload = buildChatPayload(chat);
+
+    userMessage.chat = chatPayload;
+    aiMessage.chat = chatPayload;
 
     res.status(201).json({
-      userMessage: message,
+      userMessage,
       aiMessage,
     });
   } catch (error) {
@@ -133,7 +143,6 @@ AI:
   }
 });
 
-// 🔹 Summarize messages
 const summarizeMessages = asyncHandler(async (req, res) => {
   const { chatId } = req.body;
 
@@ -142,14 +151,21 @@ const summarizeMessages = asyncHandler(async (req, res) => {
   }
 
   try {
-    const messages = await Message.find({ chat: chatId })
-      .sort({ createdAt: -1 })
-      .limit(20)
-      .populate("sender", "name")
-      .lean();
+    const chat = await Chat.findById(chatId).populate(
+      "messages.sender",
+      "name",
+    );
+
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+
+    await syncLegacyMessages(chat);
+    await chat.populate("messages.sender", "name");
+
+    const messages = chat.messages.slice(-20);
 
     const messageHistory = messages
-      .reverse()
       .map((msg) => `${msg.sender.name}: ${msg.content}`)
       .join("\n");
 
@@ -171,7 +187,6 @@ ${messageHistory}
   }
 });
 
-// 🔹 Group chat AI response
 const generateAIResponse = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
@@ -185,7 +200,6 @@ const generateAIResponse = asyncHandler(async (req, res) => {
 
     const prompt = `
 You are HG AI inside a group chat.
-Reply only if the message is meaningful.
 
 Message:
 ${content}

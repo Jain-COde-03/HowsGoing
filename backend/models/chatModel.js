@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { messageSchema } = require("./messageModel");
 
 const chatModel = mongoose.Schema(
   {
@@ -21,8 +22,12 @@ const chatModel = mongoose.Schema(
       },
     ],
     latestMessage: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Message",
+      type: messageSchema,
+      default: null,
+    },
+    messages: {
+      type: [messageSchema],
+      default: [],
     },
     groupAdmin: {
       type: mongoose.Schema.Types.ObjectId,
