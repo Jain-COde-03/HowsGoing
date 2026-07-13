@@ -104,7 +104,7 @@ const Home = () => {
           position="relative"
           minH="580px"
           h="95%"
-          maxH="85vh"
+          minH="95%"
           overflowY="auto"
         >
           <Tabs isFitted variant="soft-rounded" colorScheme="purple">
