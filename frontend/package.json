@@ -2,11 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-<<<<<<< HEAD
-  "proxy": "http://localhost:5000",
-=======
   "proxy": "http://localhost:5001",
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.9",
@@ -31,11 +27,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-<<<<<<< HEAD
     "start": "react-scripts --openssl-legacy-provider start",
-=======
     "dev": "react-scripts --openssl-legacy-provider start",
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
     "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
