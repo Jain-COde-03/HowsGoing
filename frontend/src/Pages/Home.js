@@ -33,14 +33,12 @@ const Home = () => {
       maxW="100%"
       centerContent
       minH="100vh"
-      py={8}
-      px={4}
       overflow="hidden"
     >
       <HStack
         spacing={8}
         w="100%"
-        h="auto"
+        h="100vh"
         alignItems="center"
         justifyContent="center"
         wrap="wrap"
@@ -56,9 +54,8 @@ const Home = () => {
           borderRadius="3xl"
           boxShadow="2xl"
           flex="1"
-          minW="280px"
-          maxW="sm"
-          minH="580px"
+          minW="40%"
+          minH="95%"
           position="relative"
           overflow="hidden"
           _before={{
@@ -100,14 +97,13 @@ const Home = () => {
           borderRadius="3xl"
           boxShadow="2xl"
           flex="1"
-          minW="320px"
-          maxW="md"
+          minW="55%"
           p={8}
           border="1px solid"
           borderColor="gray.100"
           position="relative"
           minH="580px"
-          h="100%"
+          h="95%"
           maxH="85vh"
           overflowY="auto"
         >
