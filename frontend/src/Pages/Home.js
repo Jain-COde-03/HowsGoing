@@ -30,7 +30,6 @@ const Home = () => {
 
   return (
     <Container
-<<<<<<< HEAD
       maxW="100%"
       centerContent
       minH="100vh"
@@ -42,16 +41,6 @@ const Home = () => {
         spacing={8}
         w="100%"
         h="auto"
-=======
-      minW = "100vw"
-      centerContent
-      minH="100vh"
-      overflow="hidden"
-    >
-      <HStack
-        w="100%"
-        h="100%"
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
         alignItems="center"
         justifyContent="center"
         wrap="wrap"
@@ -62,24 +51,14 @@ const Home = () => {
           flexDirection="column"
           alignItems="center"
           justifyContent="center"
-<<<<<<< HEAD
-=======
-          margin={0}
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
           p={8}
           bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
           borderRadius="3xl"
           boxShadow="2xl"
           flex="1"
-<<<<<<< HEAD
           minW="280px"
           maxW="sm"
           minH="580px"
-=======
-          minW="39.4%"
-          maxW="sm"
-          minH="95%"
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
           position="relative"
           overflow="hidden"
           _before={{
@@ -118,30 +97,18 @@ const Home = () => {
         {/* Auth Forms */}
         <Box
           bg="white"
-<<<<<<< HEAD
           borderRadius="3xl"
           boxShadow="2xl"
           flex="1"
           minW="320px"
-=======
-          margin={0}
-          borderRadius="3xl"
-          boxShadow="2xl"
-          flex="1"
-          minW="60%"
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
           maxW="md"
           p={8}
           border="1px solid"
           borderColor="gray.100"
           position="relative"
-<<<<<<< HEAD
           minH="580px"
           h="100%"
           maxH="85vh"
-=======
-          minH="95%"
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
           overflowY="auto"
         >
           <Tabs isFitted variant="soft-rounded" colorScheme="purple">

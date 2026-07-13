@@ -16,9 +16,5 @@ router.route("/group").post(protect, createGroupChat);
 router.route("/rename").put(protect, renameGroup);
 router.route("/groupadd").put(protect, addToGroup);
 router.route("/groupremove").put(protect, removeFromGroup);
-<<<<<<< HEAD
-router.route
-=======
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
 
 module.exports = router;

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-=======
 import React, { useCallback, useEffect, useState } from "react";
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
 import { ChatState } from "../Context/ChatProvider";
 import { Avatar, Box, Button, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
@@ -12,17 +8,11 @@ import GroupChatModal from "./Miscellaneous/GroupChatModal";
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const { user, selectedChat, setSelectedChat, chats, setChats } = ChatState();
-<<<<<<< HEAD
 
-  const toast = useToast();
-
-  const fetchChats = async () => {
-=======
   const toast = useToast();
 
   const fetchChats = useCallback(async () => {
     if (!user) return;
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
     try {
       const config = {
         headers: {
@@ -42,11 +32,7 @@ const MyChats = ({ fetchAgain }) => {
         position: "bottom-left",
       });
     }
-<<<<<<< HEAD
-  };
-=======
   }, [user, setChats, toast]);
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
 
   const handleAIChat = async () => {
     try {
@@ -77,11 +63,7 @@ const MyChats = ({ fetchAgain }) => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
-<<<<<<< HEAD
-  }, [fetchAgain]);
-=======
   }, [fetchAgain, fetchChats]);
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
 
   return (
     <Box
@@ -195,11 +177,7 @@ const MyChats = ({ fetchAgain }) => {
                 }
                 src={
                   chat.isAIChat
-<<<<<<< HEAD
-                    ? "https://icon-library.com/images/robot-avatar-icon/robot-avatar-icon-8.jpg"
-=======
                     ? "robot.png"
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
                     : chat.isGroupChat
                       ? null
                       : otherUser?.pic

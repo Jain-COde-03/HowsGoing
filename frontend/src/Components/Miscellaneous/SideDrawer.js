@@ -42,10 +42,7 @@ const SideDrawer = () => {
   const toast = useToast();
   const {
     user,
-<<<<<<< HEAD
-=======
     setUser,
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
     setSelectedChat,
     chats,
     setChats,
@@ -55,10 +52,7 @@ const SideDrawer = () => {
 
   const logOutHandler = () => {
     localStorage.removeItem("userInfo");
-<<<<<<< HEAD
-=======
     setUser(null);
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
     history.push("/");
   };
 

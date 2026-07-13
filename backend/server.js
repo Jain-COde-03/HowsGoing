@@ -88,23 +88,7 @@ io.on("connection", (socket) => {
     socket.in(room).emit("stop typing", userId);
   });
 
-<<<<<<< HEAD
-  socket.off("setup", () => {
-    console.log("USER DISCONNECTED");
-    socket.leave(userData._id);
-  });
-  socket.off("join chat", () => {
-    console.log("USER LEFT CHAT");
-    socket.leave(room);
-  });
-  socket.off("new message", () => {
-    console.log("USER LEFT CHAT");
-    socket.leave(room);
-  });
-  socket.off("disconnect", () => {
-=======
   socket.on("disconnect", () => {
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
     console.log("USER DISCONNECTED");
   });
 });

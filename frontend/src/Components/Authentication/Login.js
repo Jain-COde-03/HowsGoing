@@ -19,10 +19,7 @@ import {
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-<<<<<<< HEAD
-=======
 import { ChatState } from "../../Context/ChatProvider";
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
 
 const Login = () => {
   const toast = useToast();
@@ -31,10 +28,7 @@ const Login = () => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const history = useHistory();
-<<<<<<< HEAD
-=======
   const { setUser } = ChatState();
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
 
   const submitHandler = async () => {
     setLoading(true);
@@ -70,10 +64,7 @@ const Login = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
-<<<<<<< HEAD
-=======
       setUser(data);
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
       setLoading(false);
       history.push("/chats");
     } catch (error) {

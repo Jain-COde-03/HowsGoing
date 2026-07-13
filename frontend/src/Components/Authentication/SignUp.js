@@ -2,10 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-<<<<<<< HEAD
-=======
 import { ChatState } from "../../Context/ChatProvider";
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
 import {
   VStack,
   FormControl,
@@ -44,10 +41,7 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const history = useHistory();
-<<<<<<< HEAD
-=======
   const { setUser } = ChatState();
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
 
   const postDetails = (pics) => {
     setLoading(true);
@@ -161,10 +155,7 @@ const SignUp = () => {
       });
 
       localStorage.setItem("userInfo", JSON.stringify(data));
-<<<<<<< HEAD
-=======
       setUser(data);
->>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
       setLoading(false);
 
       history.push("/chats");
