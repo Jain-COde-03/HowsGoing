@@ -1,0 +1,24 @@
+const express = require("express");
+const { protect } = require("../middleware/authMiddleware");
+const {
+  accessChat,
+  fetchChats,
+  createGroupChat,
+  renameGroup,
+  addToGroup,
+  removeFromGroup,
+} = require("../controllers/chatControllers");
+
+const router = express.Router();
+
+router.route("/").post(protect, accessChat).get(protect, fetchChats);
+router.route("/group").post(protect, createGroupChat);
+router.route("/rename").put(protect, renameGroup);
+router.route("/groupadd").put(protect, addToGroup);
+router.route("/groupremove").put(protect, removeFromGroup);
+<<<<<<< HEAD
+router.route
+=======
+>>>>>>> d219629 (feat: Implement chat functionality with AI integration and user management)
+
+module.exports = router;
