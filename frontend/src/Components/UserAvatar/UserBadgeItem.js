@@ -1,48 +1,66 @@
 import { CloseIcon } from "@chakra-ui/icons";
-import { Box } from "@chakra-ui/react";
+import { Badge, Box } from "@chakra-ui/react";
 import React from "react";
 
-const getRandomColor = () => {
+const getConsistentColor = (name = "") => {
   const colors = [
-    "#E53E3E",
-    "#DD6B20",
-    "#D69E2E",
-    "#38A169",
-    "#3182CE",
-    "#805AD5",
-    "#6B46C1",
-    "#2C7A7B",
+    { bg: "#e7fce3", text: "#008069" },
+    { bg: "#eef2ff", text: "#4338ca" },
+    { bg: "#fef3c7", text: "#b45309" },
+    { bg: "#fce7f3", text: "#be185d" },
+    { bg: "#e0f2fe", text: "#0369a1" },
+    { bg: "#f3e8ff", text: "#7e22ce" },
   ];
-  return colors[Math.floor(Math.random() * colors.length)];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
 };
 
 const UserBadgeItem = ({ user, handleFunction }) => {
   if (!user) return null;
+  const colorScheme = getConsistentColor(user.name);
 
   return (
-    <Box
-      px={2}
+    <Badge
+      px={2.5}
       py={1}
-      borderRadius="lg"
+      borderRadius="full"
       m={1}
-      variant="solid"
-      fontSize={14}
-      color="white"
-      bg={getRandomColor()}
-      cursor="default"
+      fontSize="xs"
+      fontWeight="600"
+      display="inline-flex"
+      alignItems="center"
+      gap={1.5}
+      bg={colorScheme.bg}
+      color={colorScheme.text}
+      border="1px solid"
+      borderColor="transparent"
+      textTransform="none"
     >
-      {user.name || "Unknown"}
-
-      <CloseIcon
-        pl={1}
+      <span>{user.name || "Unknown"}</span>
+      <Box
+        as="span"
         cursor="pointer"
+        display="inline-flex"
+        alignItems="center"
+        justifyContent="center"
+        w="16px"
+        h="16px"
+        borderRadius="full"
+        _hover={{ bg: "blackAlpha.200" }}
         onClick={(e) => {
           e.stopPropagation();
           handleFunction();
         }}
-      />
-    </Box>
+      >
+        <CloseIcon w={2} h={2} />
+      </Box>
+    </Badge>
   );
 };
 
 export default UserBadgeItem;
+

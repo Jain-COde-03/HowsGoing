@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   VStack,
   FormControl,
@@ -14,9 +13,8 @@ import {
   Text,
   Icon,
   Divider,
-  Flex,
 } from "@chakra-ui/react";
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUserCheck } from "react-icons/fa";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
@@ -36,7 +34,7 @@ const Login = () => {
       toast({
         title: "Please Fill all the Fields",
         status: "warning",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom",
       });
@@ -59,7 +57,7 @@ const Login = () => {
       toast({
         title: "Login Successful",
         status: "success",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: "bottom",
       });
@@ -70,9 +68,9 @@ const Login = () => {
     } catch (error) {
       toast({
         title: "Error Occured!",
-        description: error.response.data.message,
+        description: error.response?.data?.message || "Invalid credentials",
         status: "error",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom",
       });
@@ -81,139 +79,120 @@ const Login = () => {
   };
 
   return (
-    <VStack spacing={6} w="100%">
-      <Box textAlign="center" mb={4}>
-        <Text fontSize="2xl" fontWeight="700" color="gray.700" mb={2}>
-          Welcome Back
+    <VStack spacing={4} w="100%" align="stretch">
+      <Box mb={2}>
+        <Text fontSize="xl" fontWeight="600" color="#111b21">
+          Welcome back
         </Text>
-        <Text fontSize="md" color="gray.500">
-          Sign in to continue to your account
+        <Text fontSize="sm" color="#667781">
+          Enter your details to access your chats
         </Text>
       </Box>
 
       <FormControl id="email" isRequired>
-        <Flex alignItems="center" gap={4}>
-          <FormLabel
-            color="gray.600"
-            fontWeight="600"
+        <FormLabel fontSize="xs" fontWeight="600" color="#54656f" mb={1.5}>
+          Email address
+        </FormLabel>
+        <InputGroup size="md">
+          <InputLeftElement pointerEvents="none">
+            <Icon as={FaEnvelope} color="#8696a0" />
+          </InputLeftElement>
+          <Input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            type="email"
+            placeholder="you@example.com"
+            bg="#f0f2f5"
+            border="1px solid transparent"
+            _hover={{ bg: "#e9edef" }}
+            _focus={{
+              borderColor: "#00a884",
+              bg: "#ffffff",
+              boxShadow: "0 0 0 1px #00a884",
+            }}
+            borderRadius="8px"
             fontSize="sm"
-            minW="100px"
-            mb="0"
-          >
-            Email
-          </FormLabel>
-          <InputGroup>
-            <InputLeftElement pointerEvents="none">
-              <Icon as={FaEnvelope} color="gray.400" />
-            </InputLeftElement>
-            <Input
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              value={email}
-              placeholder="Enter your email"
-              bg="gray.50"
-              border="1px solid"
-              borderColor="gray.200"
-              _hover={{ borderColor: "blue.300" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px #667eea",
-                bg: "white",
-              }}
-              borderRadius="xl"
-              size="md"
-              fontSize="sm"
-            />
-          </InputGroup>
-        </Flex>
+            color="#111b21"
+          />
+        </InputGroup>
       </FormControl>
 
       <FormControl id="password" isRequired>
-        <Flex alignItems="center" gap={4}>
-          <FormLabel
-            color="gray.600"
-            fontWeight="600"
+        <FormLabel fontSize="xs" fontWeight="600" color="#54656f" mb={1.5}>
+          Password
+        </FormLabel>
+        <InputGroup size="md">
+          <InputLeftElement pointerEvents="none">
+            <Icon as={FaLock} color="#8696a0" />
+          </InputLeftElement>
+          <Input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            type={show ? "text" : "password"}
+            placeholder="Enter password"
+            bg="#f0f2f5"
+            border="1px solid transparent"
+            _hover={{ bg: "#e9edef" }}
+            _focus={{
+              borderColor: "#00a884",
+              bg: "#ffffff",
+              boxShadow: "0 0 0 1px #00a884",
+            }}
+            borderRadius="8px"
             fontSize="sm"
-            minW="100px"
-            mb="0"
-          >
-            Password
-          </FormLabel>
-          <InputGroup>
-            <InputLeftElement pointerEvents="none">
-              <Icon as={FaLock} color="gray.400" />
-            </InputLeftElement>
-            <Input
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-              value={password}
-              type={show ? "text" : "password"}
-              placeholder="Enter your password"
-              bg="gray.50"
-              border="1px solid"
-              borderColor="gray.200"
-              _hover={{ borderColor: "blue.300" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px #667eea",
-                bg: "white",
-              }}
-              borderRadius="xl"
-              size="md"
-              fontSize="sm"
-            />
-            <InputRightElement>
-              <Button
-                h="1.75rem"
-                size="sm"
-                onClick={() => setShow(!show)}
-                variant="ghost"
-                color="gray.500"
-                _hover={{ color: "blue.500" }}
-              >
-                <Icon as={show ? FaEyeSlash : FaEye} />
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-        </Flex>
+            color="#111b21"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") submitHandler();
+            }}
+          />
+          <InputRightElement>
+            <Button
+              h="1.75rem"
+              size="sm"
+              onClick={() => setShow(!show)}
+              variant="ghost"
+              color="#8696a0"
+              _hover={{ color: "#111b21", bg: "transparent" }}
+            >
+              <Icon as={show ? FaEyeSlash : FaEye} />
+            </Button>
+          </InputRightElement>
+        </InputGroup>
       </FormControl>
 
       <Button
         isLoading={loading}
         onClick={submitHandler}
-        colorScheme="blue"
+        bg="#008069"
+        color="white"
         width="100%"
-        size="lg"
-        borderRadius="xl"
+        size="md"
+        borderRadius="8px"
         fontWeight="600"
-        bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        fontSize="sm"
         _hover={{
-          bg: "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
-          transform: "translateY(-1px)",
-          boxShadow: "lg",
+          bg: "#00a884",
         }}
         _active={{
-          transform: "translateY(0)",
+          bg: "#075e54",
         }}
+        mt={2}
         transition="all 0.2s"
-        mt={4}
       >
-        Sign In
+        Log In
       </Button>
 
-      <Box w="100%" position="relative" py={4}>
-        <Divider />
+      <Box w="100%" position="relative" py={3}>
+        <Divider borderColor="#e9edef" />
         <Text
           position="absolute"
           top="50%"
           left="50%"
           transform="translate(-50%, -50%)"
           bg="white"
-          px={4}
-          fontSize="sm"
-          color="gray.500"
+          px={3}
+          fontSize="xs"
+          color="#8696a0"
           fontWeight="500"
         >
           OR
@@ -226,24 +205,26 @@ const Login = () => {
           setPassword("guest123");
         }}
         variant="outline"
-        colorScheme="purple"
+        borderColor="#00a884"
+        color="#008069"
+        bg="#f0fdf4"
         width="100%"
-        size="lg"
-        borderRadius="xl"
+        size="md"
+        borderRadius="8px"
         fontWeight="600"
-        leftIcon={<Icon as={FaUser} />}
+        fontSize="sm"
+        leftIcon={<Icon as={FaUserCheck} />}
         _hover={{
-          bg: "purple.50",
-          borderColor: "purple.300",
-          transform: "translateY(-1px)",
-          boxShadow: "md",
+          bg: "#e7fce3",
+          borderColor: "#008069",
         }}
         transition="all 0.2s"
       >
-        Continue as Guest
+        Fill Guest Credentials
       </Button>
     </VStack>
   );
 };
 
 export default Login;
+

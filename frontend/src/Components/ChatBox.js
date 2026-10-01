@@ -5,20 +5,18 @@ import { Box } from "@chakra-ui/react";
 import SingleChat from "./SingleChat";
 
 const ChatBox = ({ fetchAgain, setFetchAgain }) => {
-  const { user, selectedChat } = ChatState();
+  const { selectedChat } = ChatState();
 
   return (
     <Box
       display={{ base: selectedChat ? "flex" : "none", md: "flex" }}
       flexDir="column"
+      flex="1"
       h="100%"
-      p={4}
-      bg="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)"
-      w={{ base: "100%", md: "69%" }}
-      borderRadius="xl"
-      boxShadow="lg"
-      color="black"
-      gap={2}
+      w={{ base: "100%", md: "calc(100% - 380px)", lg: "calc(100% - 420px)" }}
+      bg="#efeae2"
+      position="relative"
+      overflow="hidden"
     >
       <SingleChat fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
     </Box>
@@ -26,3 +24,4 @@ const ChatBox = ({ fetchAgain, setFetchAgain }) => {
 };
 
 export default ChatBox;
+

@@ -25,7 +25,7 @@ import {
   FaLock,
   FaEye,
   FaEyeSlash,
-  FaImage,
+  FaCamera,
   FaCheck,
   FaTimes,
 } from "react-icons/fa";
@@ -45,14 +45,15 @@ const SignUp = () => {
 
   const postDetails = (pics) => {
     setLoading(true);
-    if (pics === undefined) {
+    if (!pics) {
       toast({
         title: "Please Select an Image",
         status: "warning",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom",
       });
+      setLoading(false);
       return;
     }
 
@@ -66,7 +67,6 @@ const SignUp = () => {
       data.append("upload_preset", "Chat-App");
       data.append("cloud_name", "dzqiwkcet");
 
-      // Simulate upload progress
       const progressInterval = setInterval(() => {
         setUploadProgress((prev) => {
           if (prev >= 90) {
@@ -83,27 +83,32 @@ const SignUp = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setPic(data.url.toString());
           setUploadProgress(100);
-          setTimeout(() => setUploadProgress(0), 1000);
+          setTimeout(() => setUploadProgress(0), 800);
           setLoading(false);
+          toast({
+            title: "Profile photo uploaded",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+            position: "bottom",
+          });
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           setLoading(false);
           setUploadProgress(0);
         });
     } else {
       toast({
-        title: "Please Select an Image",
+        title: "Please select a valid image (JPEG/PNG)",
         status: "warning",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom",
       });
       setLoading(false);
-      return;
     }
   };
 
@@ -113,7 +118,7 @@ const SignUp = () => {
       toast({
         title: "Please Fill all the Fields",
         status: "warning",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom",
       });
@@ -125,7 +130,7 @@ const SignUp = () => {
       toast({
         title: "Passwords Do Not Match",
         status: "warning",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom",
       });
@@ -147,9 +152,9 @@ const SignUp = () => {
       );
 
       toast({
-        title: "Registration Successful",
+        title: "Account Created Successfully!",
         status: "success",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom",
       });
@@ -157,14 +162,13 @@ const SignUp = () => {
       localStorage.setItem("userInfo", JSON.stringify(data));
       setUser(data);
       setLoading(false);
-
       history.push("/chats");
     } catch (error) {
       toast({
-        title: "Error Occured!",
-        description: error.response.data.message,
+        title: "Registration Failed",
+        description: error.response?.data?.message || error.message,
         status: "error",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom",
       });
@@ -172,13 +176,13 @@ const SignUp = () => {
     }
   };
 
-  const getPasswordStrength = (password) => {
+  const getPasswordStrength = (pass) => {
     let strength = 0;
-    if (password.length >= 8) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[a-z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    if (pass.length >= 8) strength++;
+    if (/[A-Z]/.test(pass)) strength++;
+    if (/[a-z]/.test(pass)) strength++;
+    if (/[0-9]/.test(pass)) strength++;
+    if (/[^A-Za-z0-9]/.test(pass)) strength++;
     return strength;
   };
 
@@ -187,308 +191,215 @@ const SignUp = () => {
     password && confirmPassword && password === confirmPassword;
 
   return (
-    <VStack spacing={3} w="100%">
-      <Box textAlign="center" mb={4}>
-        <Text fontSize="2xl" fontWeight="700" color="gray.700" mb={2}>
+    <VStack spacing={3.5} w="100%" align="stretch">
+      <Box mb={1}>
+        <Text fontSize="xl" fontWeight="600" color="#111b21">
           Create Account
         </Text>
-        <Text fontSize="md" color="gray.500">
-          Join the conversation today
+        <Text fontSize="sm" color="#667781">
+          Start messaging with your contacts today
         </Text>
       </Box>
 
       <FormControl id="name" isRequired>
-        <Flex alignItems="center" gap={4}>
-          <FormLabel
-            color="gray.600"
-            fontWeight="600"
+        <FormLabel fontSize="xs" fontWeight="600" color="#54656f" mb={1}>
+          Full Name
+        </FormLabel>
+        <InputGroup size="md">
+          <InputLeftElement pointerEvents="none">
+            <Icon as={FaUser} color="#8696a0" />
+          </InputLeftElement>
+          <Input
+            onChange={(e) => setName(e.target.value)}
+            value={name}
+            placeholder="John Doe"
+            bg="#f0f2f5"
+            border="1px solid transparent"
+            _hover={{ bg: "#e9edef" }}
+            _focus={{
+              borderColor: "#00a884",
+              bg: "#ffffff",
+              boxShadow: "0 0 0 1px #00a884",
+            }}
+            borderRadius="8px"
             fontSize="sm"
-            minW="100px"
-            mb="0"
-          >
-            Full Name
-          </FormLabel>
-          <InputGroup>
-            <InputLeftElement pointerEvents="none">
-              <Icon as={FaUser} color="gray.400" />
-            </InputLeftElement>
-            <Input
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-              value={name}
-              placeholder="Enter your full name"
-              bg="gray.50"
-              border="1px solid"
-              borderColor="gray.200"
-              _hover={{ borderColor: "blue.300" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px #667eea",
-                bg: "white",
-              }}
-              borderRadius="xl"
-              size="md"
-              fontSize="sm"
-            />
-          </InputGroup>
-        </Flex>
+            color="#111b21"
+          />
+        </InputGroup>
       </FormControl>
 
-      <FormControl id="email" isRequired>
-        <Flex alignItems="center" gap={4}>
-          <FormLabel
-            color="gray.600"
-            fontWeight="600"
+      <FormControl id="email-signup" isRequired>
+        <FormLabel fontSize="xs" fontWeight="600" color="#54656f" mb={1}>
+          Email address
+        </FormLabel>
+        <InputGroup size="md">
+          <InputLeftElement pointerEvents="none">
+            <Icon as={FaEnvelope} color="#8696a0" />
+          </InputLeftElement>
+          <Input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            type="email"
+            placeholder="you@example.com"
+            bg="#f0f2f5"
+            border="1px solid transparent"
+            _hover={{ bg: "#e9edef" }}
+            _focus={{
+              borderColor: "#00a884",
+              bg: "#ffffff",
+              boxShadow: "0 0 0 1px #00a884",
+            }}
+            borderRadius="8px"
             fontSize="sm"
-            minW="100px"
-            mb="0"
-          >
-            Email
-          </FormLabel>
-          <InputGroup>
-            <InputLeftElement pointerEvents="none">
-              <Icon as={FaEnvelope} color="gray.400" />
-            </InputLeftElement>
-            <Input
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              value={email}
-              placeholder="Enter your email"
-              bg="gray.50"
-              border="1px solid"
-              borderColor="gray.200"
-              _hover={{ borderColor: "blue.300" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px #667eea",
-                bg: "white",
-              }}
-              borderRadius="xl"
-              size="md"
-              fontSize="sm"
-            />
-          </InputGroup>
-        </Flex>
+            color="#111b21"
+          />
+        </InputGroup>
       </FormControl>
 
-      <FormControl id="password" isRequired>
-        <Flex alignItems="flex-start" gap={4} flexDirection="column">
-          <Flex alignItems="center" gap={4} w="100%">
-            <FormLabel
-              color="gray.600"
-              fontWeight="600"
-              fontSize="sm"
-              minW="100px"
-              mb="0"
+      <FormControl id="password-signup" isRequired>
+        <FormLabel fontSize="xs" fontWeight="600" color="#54656f" mb={1}>
+          Password
+        </FormLabel>
+        <InputGroup size="md">
+          <InputLeftElement pointerEvents="none">
+            <Icon as={FaLock} color="#8696a0" />
+          </InputLeftElement>
+          <Input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            type={show ? "text" : "password"}
+            placeholder="Create password"
+            bg="#f0f2f5"
+            border="1px solid transparent"
+            _hover={{ bg: "#e9edef" }}
+            _focus={{
+              borderColor: "#00a884",
+              bg: "#ffffff",
+              boxShadow: "0 0 0 1px #00a884",
+            }}
+            borderRadius="8px"
+            fontSize="sm"
+            color="#111b21"
+          />
+          <InputRightElement>
+            <Button
+              h="1.75rem"
+              size="sm"
+              onClick={() => setShow(!show)}
+              variant="ghost"
+              color="#8696a0"
+              _hover={{ color: "#111b21", bg: "transparent" }}
             >
-              Password
-            </FormLabel>
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <Icon as={FaLock} color="gray.400" />
-              </InputLeftElement>
-              <Input
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                value={password}
-                type={show ? "text" : "password"}
-                placeholder="Create a strong password"
-                bg="gray.50"
-                border="1px solid"
-                borderColor="gray.200"
-                _hover={{ borderColor: "blue.300" }}
-                _focus={{
-                  borderColor: "blue.500",
-                  boxShadow: "0 0 0 1px #667eea",
-                  bg: "white",
-                }}
-                borderRadius="xl"
-                size="md"
-                fontSize="sm"
-              />
-              <InputRightElement>
-                <Button
-                  h="1.75rem"
-                  size="sm"
-                  onClick={() => setShow(!show)}
-                  variant="ghost"
-                  color="gray.500"
-                  _hover={{ color: "blue.500" }}
-                >
-                  <Icon as={show ? FaEyeSlash : FaEye} />
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-          </Flex>
-          {password && (
-            <Box w="100%" pl="104px">
-              <Progress
-                value={(passwordStrength / 5) * 100}
-                size="sm"
-                colorScheme={
-                  passwordStrength < 3
-                    ? "red"
-                    : passwordStrength < 4
-                      ? "yellow"
-                      : "green"
-                }
-                borderRadius="md"
-              />
-              <Text fontSize="xs" color="gray.500" mt={1}>
-                Password strength:{" "}
-                {passwordStrength < 3
-                  ? "Weak"
+              <Icon as={show ? FaEyeSlash : FaEye} />
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+        {password && (
+          <Box mt={1.5}>
+            <Progress
+              value={(passwordStrength / 5) * 100}
+              size="xs"
+              colorScheme={
+                passwordStrength < 3
+                  ? "red"
                   : passwordStrength < 4
-                    ? "Medium"
-                    : "Strong"}
-              </Text>
-            </Box>
-          )}
-        </Flex>
+                    ? "yellow"
+                    : "green"
+              }
+              borderRadius="full"
+            />
+          </Box>
+        )}
       </FormControl>
 
-      <FormControl id="confirm-password" isRequired>
-        <Flex alignItems="flex-start" gap={4} flexDirection="column">
-          <Flex alignItems="center" gap={4} w="100%">
-            <FormLabel
-              color="gray.600"
-              fontWeight="600"
-              fontSize="sm"
-              minW="100px"
-              mb="0"
-            >
-              Confirm
-            </FormLabel>
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <Icon
-                  as={passwordsMatch ? FaCheck : FaTimes}
-                  color={passwordsMatch ? "green.400" : "red.400"}
-                />
-              </InputLeftElement>
-              <Input
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                }}
-                value={confirmPassword}
-                type={show ? "text" : "password"}
-                placeholder="Confirm your password"
-                bg="gray.50"
-                border="1px solid"
-                borderColor={passwordsMatch ? "green.200" : "gray.200"}
-                _hover={{
-                  borderColor: passwordsMatch ? "green.300" : "blue.300",
-                }}
-                _focus={{
-                  borderColor: passwordsMatch ? "green.500" : "blue.500",
-                  boxShadow: `0 0 0 1px ${passwordsMatch ? "#48BB78" : "#667eea"}`,
-                  bg: "white",
-                }}
-                borderRadius="xl"
-                size="md"
-                fontSize="sm"
-              />
-            </InputGroup>
-          </Flex>
-          {confirmPassword && (
-            <Text
-              fontSize="xs"
-              color={passwordsMatch ? "green.500" : "red.500"}
-              pl="104px"
-            >
-              {passwordsMatch ? "✓ Passwords match" : "✗ Passwords don't match"}
-            </Text>
-          )}
-        </Flex>
+      <FormControl id="confirm-password-signup" isRequired>
+        <FormLabel fontSize="xs" fontWeight="600" color="#54656f" mb={1}>
+          Confirm Password
+        </FormLabel>
+        <InputGroup size="md">
+          <InputLeftElement pointerEvents="none">
+            <Icon
+              as={passwordsMatch ? FaCheck : FaTimes}
+              color={passwordsMatch ? "#00a884" : "#8696a0"}
+            />
+          </InputLeftElement>
+          <Input
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={confirmPassword}
+            type={show ? "text" : "password"}
+            placeholder="Confirm password"
+            bg="#f0f2f5"
+            border="1px solid transparent"
+            _hover={{ bg: "#e9edef" }}
+            _focus={{
+              borderColor: passwordsMatch ? "#00a884" : "red.400",
+              bg: "#ffffff",
+              boxShadow: `0 0 0 1px ${passwordsMatch ? "#00a884" : "#e53e3e"}`,
+            }}
+            borderRadius="8px"
+            fontSize="sm"
+            color="#111b21"
+          />
+        </InputGroup>
       </FormControl>
 
       <FormControl id="pic">
-        <Flex alignItems="flex-start" gap={4} flexDirection="column">
-          <Flex alignItems="center" gap={4} w="100%">
-            <FormLabel
-              color="gray.600"
-              fontWeight="600"
-              fontSize="sm"
-              minW="100px"
-              mb="0"
-            >
-              Picture
-            </FormLabel>
-            <Box position="relative" w="100%">
-              <Input
-                onChange={(e) => {
-                  postDetails(e.target.files[0]);
-                }}
-                type="file"
-                p={1.5}
-                accept="image/*"
-                border="2px dashed"
-                borderColor="gray.300"
-                borderRadius="xl"
-                bg="gray.50"
-                _hover={{ borderColor: "blue.300", bg: "blue.50" }}
-                _focus={{
-                  borderColor: "blue.500",
-                  boxShadow: "0 0 0 1px #667eea",
-                }}
-                sx={{
-                  "::file-selector-button": {
-                    border: "none",
-                    bg: "blue.500",
-                    color: "white",
-                    borderRadius: "lg",
-                    padding: "4px 12px",
-                    marginRight: "8px",
-                    cursor: "pointer",
-                    fontWeight: "500",
-                  },
-                }}
-              />
-              {uploadProgress > 0 && (
-                <Progress
-                  value={uploadProgress}
-                  size="sm"
-                  colorScheme="blue"
-                  mt={2}
-                  borderRadius="md"
-                />
-              )}
-            </Box>
-          </Flex>
-          <Text fontSize="xs" color="gray.500" pl="104px">
-            <Icon as={FaImage} mr={1} />
-            Upload a profile picture (optional)
-          </Text>
-        </Flex>
+        <FormLabel fontSize="xs" fontWeight="600" color="#54656f" mb={1}>
+          Profile Picture <span style={{ fontWeight: "normal", color: "#8696a0" }}>(Optional)</span>
+        </FormLabel>
+        <Input
+          onChange={(e) => postDetails(e.target.files[0])}
+          type="file"
+          p={1}
+          accept="image/*"
+          bg="#f0f2f5"
+          border="1px dashed #cbd5e0"
+          borderRadius="8px"
+          fontSize="xs"
+          sx={{
+            "::file-selector-button": {
+              border: "none",
+              bg: "#e9edef",
+              color: "#111b21",
+              borderRadius: "6px",
+              padding: "3px 10px",
+              marginRight: "8px",
+              cursor: "pointer",
+              fontWeight: "600",
+              fontSize: "xs",
+            },
+          }}
+        />
+        {uploadProgress > 0 && (
+          <Progress
+            value={uploadProgress}
+            size="xs"
+            colorScheme="green"
+            mt={1.5}
+            borderRadius="full"
+          />
+        )}
       </FormControl>
 
       <Button
         onClick={submitHandler}
-        colorScheme="blue"
+        bg="#008069"
+        color="white"
         width="100%"
-        size="lg"
-        borderRadius="xl"
+        size="md"
+        borderRadius="8px"
         fontWeight="600"
-        bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-        _hover={{
-          bg: "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
-          transform: "translateY(-1px)",
-          boxShadow: "lg",
-        }}
-        _active={{
-          transform: "translateY(0)",
-        }}
-        transition="all 0.2s"
-        mt={4}
+        fontSize="sm"
+        _hover={{ bg: "#00a884" }}
+        _active={{ bg: "#075e54" }}
+        mt={2}
         isLoading={loading}
       >
-        Create Account
+        Sign Up
       </Button>
     </VStack>
   );
 };
 
 export default SignUp;
+

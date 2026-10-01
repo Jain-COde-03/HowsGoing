@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -19,11 +18,18 @@ import {
   DrawerHeader,
   DrawerBody,
   Input,
+  InputGroup,
+  InputLeftElement,
   useToast,
   Spinner,
   Badge,
+  Flex,
+  Icon,
+  IconButton,
 } from "@chakra-ui/react";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { IoSearchOutline, IoArrowBack, IoClose } from "react-icons/io5";
+import { FaWhatsapp, FaRobot, FaUsers } from "react-icons/fa";
 import { ChatState } from "../../Context/ChatProvider";
 import ProfileModel from "./ProfileModel";
 import { useHistory } from "react-router-dom";
@@ -33,10 +39,10 @@ import UserListItem from "../UserAvatar/UserListItem";
 import { getSender } from "../../Config/ChatLogics";
 
 const SideDrawer = () => {
-  const [search, setsearch] = useState("");
-  const [searchResult, setsearchResult] = useState([]);
-  const [loading, setloading] = useState(false);
-  const [loadingChat, setloadingChat] = useState(false);
+  const [search, setSearch] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
   const history = useHistory();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -58,7 +64,7 @@ const SideDrawer = () => {
 
   const handleAIChat = async () => {
     try {
-      setloadingChat(true);
+      setLoadingChat(true);
       const config = {
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -71,15 +77,15 @@ const SideDrawer = () => {
         setChats([data, ...chats]);
       }
       setSelectedChat(data);
-      setloadingChat(false);
+      setLoadingChat(false);
       onClose();
     } catch (error) {
-      setloadingChat(false);
+      setLoadingChat(false);
       toast({
         title: "Error starting AI chat",
         description: error.response?.data?.message || error.message,
         status: "error",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom-left",
       });
@@ -89,9 +95,9 @@ const SideDrawer = () => {
   const handleSearch = async () => {
     if (!search) {
       toast({
-        title: "Please Enter something in search",
+        title: "Please enter name or email",
         status: "warning",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: "top-left",
       });
@@ -99,23 +105,22 @@ const SideDrawer = () => {
     }
 
     try {
-      setloading(true);
-
+      setLoading(true);
       const config = {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       };
       const { data } = await axios.get(`/api/users?search=${search}`, config);
-      setloading(false);
-      setsearchResult(data);
+      setLoading(false);
+      setSearchResult(data);
     } catch (error) {
-      setloading(false);
+      setLoading(false);
       toast({
-        title: "Error Occurred!",
-        description: "Failed to Load the Search Results",
+        title: "Error",
+        description: "Failed to load search results",
         status: "error",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "top-left",
       });
@@ -124,7 +129,7 @@ const SideDrawer = () => {
 
   const accessChat = async (userId) => {
     try {
-      setloadingChat(true);
+      setLoadingChat(true);
       const config = {
         headers: {
           "Content-type": "application/json",
@@ -135,14 +140,15 @@ const SideDrawer = () => {
 
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
-      setloadingChat(false);
+      setLoadingChat(false);
       onClose();
     } catch (error) {
+      setLoadingChat(false);
       toast({
-        title: "Error fetching the chat",
+        title: "Error opening chat",
         description: error.message,
         status: "error",
-        duration: 5000,
+        duration: 4000,
         isClosable: true,
         position: "bottom-left",
       });
@@ -150,190 +156,83 @@ const SideDrawer = () => {
   };
 
   return (
-    <div>
-      <Box
-        display="flex"
-        flexDirection={"row"}
-        justifyContent="space-between"
-        alignItems="center"
-        bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-        w="100%"
-        p="12px 20px"
-        boxShadow="lg"
-        textcolor="white"
-      >
-        <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-          <Button
-            onClick={onOpen}
-            variant="ghost"
-            color="white"
-            _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-            fontSize="lg"
-            gap={3}
-          >
-            <i className="fas fa-search"></i>
-            <Text d={{ base: "none", md: "flex" }} fontWeight="500">
-              Search User
-            </Text>
-          </Button>
-        </Tooltip>
-
-        <Text
-          fontSize="2xl"
-          fontFamily="Work sans"
-          color="white"
-          fontWeight="800"
-          letterSpacing="1px"
-        >
-          HowsGoing?
-        </Text>
-
-        <Box display="flex" alignItems="center" gap={2}>
-          <Menu>
-            <MenuButton
-              as={Button}
-              color="white"
-              bg="transparent"
-              p={2}
-              position="relative"
-              m={1}
-              _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-              borderRadius="full"
-            >
-              {notifications.length > 0 && (
-                <Badge
-                  position="absolute"
-                  top="-1"
-                  right="-1"
-                  colorScheme="red"
-                  borderRadius="full"
-                  fontSize="xs"
-                >
-                  {notifications.length}
-                </Badge>
-              )}
-              <BellIcon fontSize="xl" />
-            </MenuButton>
-            <MenuList textColor="black" p={2} boxShadow="lg" borderRadius="lg">
-              {!notifications.length && "No New Messages"}
-              {notifications.map((notif) => (
-                <MenuItem
-                  key={notif._id}
-                  onClick={() => {
-                    setSelectedChat(notif.chat);
-                    setNotifications(notifications.filter((n) => n !== notif));
-                  }}
-                  _hover={{ bg: "gray.100" }}
-                  borderRadius="md"
-                >
-                  {notif.chat.isGroupChat
-                    ? `New Message in ${notif.chat.chatName}`
-                    : `New Message from ${getSender(user, notif.chat.users)}`}
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Menu>
-          <Menu>
-            <MenuButton
-              as={Button}
-              rightIcon={<ChevronDownIcon />}
-              bg="transparent"
-              color="white"
-              _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-              borderRadius="full"
-            >
-              <Avatar
-                size="sm"
-                cursor="pointer"
-                name={user.name}
-                src={user.pic}
-                border="2px solid white"
-              />
-            </MenuButton>
-            <MenuList textcolor="black" boxShadow="lg" borderRadius="lg">
-              <ProfileModel user={user}>
-                <MenuItem
-                  color="black"
-                  _hover={{ bg: "gray.100" }}
-                  borderRadius="md"
-                >
-                  My Profile
-                </MenuItem>
-              </ProfileModel>
-              <MenuItem
-                color="black"
-                onClick={handleAIChat}
-                _hover={{ bg: "gray.100" }}
-                borderRadius="md"
-              >
-                Chat with AI
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem
-                color="black"
-                onClick={logOutHandler}
-                _hover={{ bg: "red.50" }}
-                borderRadius="md"
-              >
-                Logout
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </Box>
-      </Box>
-
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent borderRadius="xl">
+    <>
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="sm">
+        <DrawerOverlay bg="blackAlpha.300" />
+        <DrawerContent maxW={{ base: "100%", md: "420px" }}>
           <DrawerHeader
-            bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            bg="#008069"
             color="white"
-            borderRadius="xl 0 0 0"
-            fontWeight="800"
-            fontSize="lg"
+            h="108px"
+            p={0}
+            display="flex"
+            alignItems="flex-end"
+            pb={3}
+            px={5}
           >
-            Search Users
-          </DrawerHeader>
-          <DrawerBody pt={6}>
-            <Box display="flex" pb={4} gap={2}>
-              <Input
-                placeholder="Search by name or email"
-                value={search}
-                onChange={(e) => setsearch(e.target.value)}
-                borderRadius="2xl"
-                boxShadow="sm"
-                _focus={{ borderColor: "blue.300", boxShadow: "outline" }}
+            <Flex align="center" gap={4} w="100%">
+              <IconButton
+                size="sm"
+                variant="ghost"
+                icon={<Icon as={IoArrowBack} fontSize="20px" color="white" />}
+                onClick={onClose}
+                aria-label="Back"
+                _hover={{ bg: "whiteAlpha.200" }}
+                borderRadius="full"
               />
-              <Button
-                onClick={handleSearch}
-                colorScheme="blue"
-                borderRadius="2xl"
-                fontWeight="600"
-              >
-                Search
-              </Button>
-            </Box>
-            {loading ? (
-              <ChatLoading />
-            ) : (
-              searchResult?.map((user) => (
-                <UserListItem
-                  key={user._id}
-                  user={user}
-                  handleFunction={() => {
-                    accessChat(user._id);
+              <Text fontSize="18px" fontWeight="600">
+                Search Contacts
+              </Text>
+            </Flex>
+          </DrawerHeader>
+
+          <DrawerBody p={0} bg="white">
+            <Box px={3} py={2} bg="#ffffff" borderBottom="1px solid #e9edef">
+              <InputGroup size="sm">
+                <InputLeftElement pointerEvents="none" h="35px">
+                  <Icon as={IoSearchOutline} color="#54656f" fontSize="16px" />
+                </InputLeftElement>
+                <Input
+                  placeholder="Search name or email..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearch();
                   }}
+                  bg="#f0f2f5"
+                  border="none"
+                  borderRadius="8px"
+                  h="35px"
+                  fontSize="14px"
+                  color="#111b21"
                 />
-              ))
-            )}
-            {loadingChat && (
-              <Spinner ml="auto" display="flex" thickness="4px" />
-            )}
+              </InputGroup>
+            </Box>
+
+            <Box p={2}>
+              {loading ? (
+                <ChatLoading />
+              ) : (
+                searchResult?.map((u) => (
+                  <UserListItem
+                    key={u._id}
+                    user={u}
+                    handleFunction={() => accessChat(u._id)}
+                  />
+                ))
+              )}
+              {loadingChat && (
+                <Flex justify="center" p={4}>
+                  <Spinner size="sm" color="#00a884" thickness="3px" />
+                </Flex>
+              )}
+            </Box>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-    </div>
+    </>
   );
 };
 
 export default SideDrawer;
+
